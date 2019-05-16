@@ -32,4 +32,9 @@
         <log type="coverage-html" target="coverage"/>
         <log type="coverage-text" target="php://stdout"/>
     </logging>
+
+    <php>
+        <env name="AWS_ACCESS_KEY_ID" value="foo" />
+        <env name="AWS_SECRET_ACCESS_KEY" value="bar" />
+    </php>
 </phpunit>
