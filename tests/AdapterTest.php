@@ -34,7 +34,7 @@ class AdapterTest extends TestCase
                 'Token'           => null,
                 'Expiration'      => "@{$expire}",
             ];
-            return promise_for(new Response(200, [], stream_for(json_encode($f))));
+            return promise_for(new Response(200, [], \GuzzleHttp\Psr7\Utils::streamFor(json_encode($f))));
         };
         $app['config']->set('easyaws.http_client', $client);
     }
