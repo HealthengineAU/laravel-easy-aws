@@ -32,4 +32,7 @@
         <log type="coverage-html" target="coverage"/>
         <log type="coverage-text" target="php://stdout"/>
     </logging>
+    <php>
+        <server name="DYNAMODB_CONNECTION" value="test"/>
+    </php>
 </phpunit>
