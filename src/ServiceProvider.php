@@ -38,6 +38,7 @@ class ServiceProvider extends BaseServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/easyaws.php', 'easyaws');
+        $this->mergeConfigFrom(__DIR__ . '/../config/dynamodb.php', 'dynamodb');
 
         $this->app->singleton('easyaws.credentials', function ($app) {
             $credentialsCache = [
@@ -53,7 +54,18 @@ class ServiceProvider extends BaseServiceProvider
             SqsClient::class,
             $this->getAwsClientClosure('sqs', ['http' => ['timeout' => 60, 'connect_timeout' => 60]])
         );
-        $this->app->singleton(DynamoDbClient::class, $this->getAwsClientClosure('dynamoDb'));
+        $this->app->singleton(
+            DynamoDbClient::class,
+            $this->getAwsClientClosure('dynamoDb', $this->getDynamoDBConfig())
+        );
+    }
+
+    protected function getDynamoDBConfig(): array
+    {
+        $connection = config('dynamodb.default');
+        $config = config("dynamodb.connections.$connection", []);
+        $config['version'] = '2012-08-10';
+        return $config;
     }
 
     /**
