@@ -1,4 +1,4 @@
-# Laravel Easy AWS
+# Laravel Easy AWS MYSTERY EDITION
 
 [![Latest Stable Version](https://poser.pugx.org/healthengine/laravel-easy-aws/version)](https://packagist.org/packages/healthengine/laravel-easy-aws)
 [![Total Downloads](https://poser.pugx.org/healthengine/laravel-easy-aws/downloads)](https://packagist.org/packages/healthengine/laravel-easy-aws)
