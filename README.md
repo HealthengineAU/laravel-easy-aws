@@ -15,6 +15,12 @@ It also binds certain AWS client objects to the Laravel container so you can typ
 instead of using the `AWS` facade. Clients are added as needed and we welcome PRs so if you need one that is missing,
 please contribute.
 
+## Supported clients
+* `LambdaClient`
+* `S3Client`
+* `SnsClient`
+* `DynamoDbClient`
+
 ## Installation
 
 ```
@@ -51,6 +57,10 @@ as the credentials are stored in plaintext.
 The queue configuration for AWS SQS has also been modified to use these cached credentials. This means you don't need to
 add a key or secret for that client - if using SQS as your queue driver. Also **please note** that  the `prefix`
 configuration key is not used because it is redundant, you'll need to prepend the value of `prefix` to `queue`.
+
+## DynamoDB Client
+
+The DynamoDB client config file is located in `config/dynamodb.php`
 
 ## License
 
