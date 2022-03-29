@@ -2,6 +2,7 @@
 
 namespace EasyAws\Tests;
 
+use Aws\DynamoDb\DynamoDbClient;
 use Aws\Lambda\LambdaClient;
 use Aws\Laravel\AwsServiceProvider;
 use Aws\S3\S3Client;
@@ -30,6 +31,11 @@ class ServiceProviderTest extends TestCase
     public function testMakeSqsClient()
     {
         $this->assertInstanceOf(SqsClient::class, $this->app->make(SqsClient::class));
+    }
+
+    public function testMakeDynamoDbClient()
+    {
+        $this->assertInstanceOf(DynamoDbClient::class, $this->app->make(DynamoDbClient::class));
     }
 
     protected function getPackageProviders($app)

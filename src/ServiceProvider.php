@@ -2,6 +2,7 @@
 
 namespace EasyAws;
 
+use Aws\DynamoDb\DynamoDbClient;
 use Aws\Lambda\LambdaClient;
 use Aws\S3\S3Client;
 use Aws\Sns\SnsClient;
@@ -52,6 +53,7 @@ class ServiceProvider extends BaseServiceProvider
             SqsClient::class,
             $this->getAwsClientClosure('sqs', ['http' => ['timeout' => 60, 'connect_timeout' => 60]])
         );
+        $this->app->singleton(DynamoDbClient::class, $this->getAwsClientClosure('dynamoDb'));
     }
 
     /**
