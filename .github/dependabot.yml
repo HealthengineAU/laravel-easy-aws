@@ -1,0 +1,14 @@
+version: 2
+updates:
+- package-ecosystem: composer
+  directory: /
+  schedule:
+    interval: daily
+    time: '13:00'
+    timezone: Australia/Perth
+  assignees:
+  - tspencer244
+  pull-request-branch-name:
+    separator: '-'
+  reviewers:
+  - tspencer244
