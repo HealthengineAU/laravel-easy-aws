@@ -40,11 +40,15 @@ class ServiceProvider extends BaseServiceProvider
         $this->mergeConfigFrom(__DIR__ . '/../config/easyaws.php', 'easyaws');
 
         $this->app->singleton('easyaws.credentials', function ($app) {
-            $credentialsCache = [
-                'credentials' => new Adapter($app->make(CacheManager::class), config('easyaws.cache_store')),
-                'client' => config('easyaws.http_client'), // NOTE: used for unit testing only
-            ];
-            return CredentialProvider::defaultProvider($credentialsCache);
+            $config = array_merge(
+                config('aws', []),
+                [
+                    'client' => config('easyaws.http_client'), // NOTE: used for unit testing only
+                    'credentials' => new Adapter($app->make(CacheManager::class), config('easyaws.cache_store')),
+                ],
+            );
+
+            return CredentialProvider::defaultProvider($config);
         });
         $this->app->singleton(LambdaClient::class, $this->getAwsClientClosure('lambda'));
         $this->app->singleton(S3Client::class, $this->getAwsClientClosure('s3'));
