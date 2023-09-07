@@ -9,7 +9,7 @@ use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Utils;
 use Illuminate\Cache\CacheManager;
 use Orchestra\Testbench\TestCase;
-use function GuzzleHttp\Promise\promise_for;
+use GuzzleHttp\Promise\Create;
 
 class AdapterTest extends TestCase
 {
@@ -34,7 +34,7 @@ class AdapterTest extends TestCase
                 'Token'           => null,
                 'Expiration'      => "@{$expire}",
             ];
-            return promise_for(new Response(200, [], Utils::streamFor(json_encode($f))));
+            return Create::promiseFor(new Response(200, [], Utils::streamFor(json_encode($f))));
         };
         $app['config']->set('easyaws.http_client', $client);
     }
