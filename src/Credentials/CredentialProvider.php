@@ -5,7 +5,8 @@ namespace EasyAws\Credentials;
 use Aws\Credentials\Credentials;
 use Aws\Credentials\CredentialProvider as BaseProvider;
 use Aws\Exception\CredentialsException;
-use GuzzleHttp\Promise;
+use GuzzleHttp\Promise\Create;
+use GuzzleHttp\Promise\RejectedPromise;
 
 class CredentialProvider extends BaseProvider
 {
@@ -22,12 +23,12 @@ class CredentialProvider extends BaseProvider
             $key = config('easyaws.credentials.key');
             $secret = config('easyaws.credentials.secret');
             if ($key && $secret) {
-                return Promise\promise_for(
+                return Create::promiseFor(
                     new Credentials($key, $secret, config('easyaws.credentials.session_token'))
                 );
             }
 
-            return new Promise\RejectedPromise(
+            return new RejectedPromise(
                 new CredentialsException('Could not find environment variable credentials in easyaws config')
             );
         };
