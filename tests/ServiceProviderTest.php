@@ -6,10 +6,12 @@ use Aws\DynamoDb\DynamoDbClient;
 use Aws\Lambda\LambdaClient;
 use Aws\Laravel\AwsServiceProvider;
 use Aws\S3\S3Client;
+use Aws\Sdk;
 use Aws\Sns\SnsClient;
 use Aws\Sqs\SqsClient;
 use EasyAws\ServiceProvider;
 use Orchestra\Testbench\TestCase;
+use PHPUnit\Framework\MockObject\Exception;
 
 class ServiceProviderTest extends TestCase
 {
@@ -36,6 +38,36 @@ class ServiceProviderTest extends TestCase
     public function testMakeDynamoDbClient()
     {
         $this->assertInstanceOf(DynamoDbClient::class, $this->app->make(DynamoDbClient::class));
+    }
+
+    /**
+     * @return void
+     * @throws Exception
+     */
+    public function testDynamoDbClientUsesFalseCredentialsWhenSdkConfigured(): void
+    {
+        config(['aws.credentials' => false]);
+
+        $sdk = $this->createMock(Sdk::class);
+        $sdk->expects($this->once())->method('createClient')->with('dynamoDb', ['credentials' => false]);
+        $this->instance('aws', $sdk);
+
+        resolve(DynamoDbClient::class);
+    }
+
+    /**
+     * @return void
+     * @throws Exception
+     */
+    public function testDynamoDbClientUsesFalseCredentialsWhenServiceConfigured(): void
+    {
+        config(['aws.DynamoDb.credentials' => false]);
+
+        $sdk = $this->createMock(Sdk::class);
+        $sdk->expects($this->once())->method('createClient')->with('dynamoDb', ['credentials' => false]);
+        $this->instance('aws', $sdk);
+
+        resolve(DynamoDbClient::class);
     }
 
     protected function getPackageProviders($app)

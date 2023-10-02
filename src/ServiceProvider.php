@@ -74,6 +74,27 @@ class ServiceProvider extends BaseServiceProvider
                 $config,
                 $runtimeConfig
             );
+
+            $awsConfig = config('aws');
+
+            if (is_array($awsConfig)) {
+                if (array_key_exists('credentials', $awsConfig) && $awsConfig['credentials'] === false) {
+                    $config['credentials'] = false;
+                } else {
+                    // Check for service-specific credential config.
+                    $serviceConfigKey = strtoupper($client[0]) . substr($client, 1);
+
+                    if (
+                        array_key_exists($serviceConfigKey, $awsConfig)
+                        && is_array($awsConfig[$serviceConfigKey])
+                        && array_key_exists('credentials', $awsConfig[$serviceConfigKey])
+                        && $awsConfig[$serviceConfigKey]['credentials'] === false
+                    ) {
+                        $config['credentials'] = false;
+                    }
+                }
+            }
+
             return $app->make('aws')->createClient($client, $config);
         };
     }
