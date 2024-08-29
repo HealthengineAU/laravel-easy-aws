@@ -4,12 +4,15 @@ executors:
   php81:
     docker:
       - image: cimg/php:8.1
+    resource_class: small
   php82:
     docker:
       - image: cimg/php:8.2
+    resource_class: small
   php83:
     docker:
       - image: cimg/php:8.3
+    resource_class: small
 
 jobs:
   lint:
@@ -58,6 +61,8 @@ workflows:
                 testbench_version: '8'
               - php_executor: php81
                 laravel_version: '11'
+              - php_executor: php81
+                testbench_version: '9'
             parameters:
               laravel_version: ['10', '11']
               php_executor: [php81, php82, php83]
