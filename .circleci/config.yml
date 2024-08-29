@@ -68,6 +68,9 @@ workflows:
                 php_executor: php81
                 testbench_version: '8'
               - laravel_version: '11'
+                php_executor: php81
+                testbench_version: '9'
+              - laravel_version: '11'
                 php_executor: php82
                 testbench_version: '8'
               - laravel_version: '11'
