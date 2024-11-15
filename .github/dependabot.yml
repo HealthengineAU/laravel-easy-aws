@@ -5,9 +5,10 @@ updates:
   schedule:
     interval: monthly
   assignees:
-  - tspencer244
+    - tspencer244
   open-pull-requests-limit: 0
   pull-request-branch-name:
     separator: '-'
+  rebase-strategy: disabled
   reviewers:
-  - tspencer244
+    - tspencer244
