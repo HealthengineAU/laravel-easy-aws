@@ -55,7 +55,7 @@ class ServiceProvider extends BaseServiceProvider
         $this->app->singleton(SnsClient::class, $this->getAwsClientClosure('sns'));
         $this->app->singleton(
             SqsClient::class,
-            $this->getAwsClientClosure('sqs', ['http' => ['timeout' => 60, 'connect_timeout' => 60]])
+            $this->getAwsClientClosure('sqs', ['http' => ['timeout' => 60, 'connect_timeout' => 5]])
         );
         $this->app->singleton(DynamoDbClient::class, $this->getAwsClientClosure('dynamoDb'));
     }
