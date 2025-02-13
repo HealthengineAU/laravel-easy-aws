@@ -53,10 +53,7 @@ class ServiceProvider extends BaseServiceProvider
         $this->app->singleton(LambdaClient::class, $this->getAwsClientClosure('lambda'));
         $this->app->singleton(S3Client::class, $this->getAwsClientClosure('s3'));
         $this->app->singleton(SnsClient::class, $this->getAwsClientClosure('sns'));
-        $this->app->singleton(
-            SqsClient::class,
-            $this->getAwsClientClosure('sqs', ['http' => ['timeout' => 60, 'connect_timeout' => 5]])
-        );
+        $this->app->singleton(SqsClient::class, $this->getAwsClientClosure('sqs'));
         $this->app->singleton(DynamoDbClient::class, $this->getAwsClientClosure('dynamoDb'));
     }
 
@@ -70,7 +67,12 @@ class ServiceProvider extends BaseServiceProvider
     {
         return function ($app, $runtimeConfig) use ($client, $config) {
             $config = array_merge(
-                ['credentials' => $app->make('easyaws.credentials')],
+                [
+                    'credentials' => $app->make('easyaws.credentials'),
+                    'http' => [
+                        'connect_timeout' => 5.0,
+                    ],
+                ],
                 $config,
                 $runtimeConfig
             );
