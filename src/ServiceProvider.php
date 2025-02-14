@@ -71,6 +71,7 @@ class ServiceProvider extends BaseServiceProvider
                     'credentials' => $app->make('easyaws.credentials'),
                     'http' => [
                         'connect_timeout' => 5.0,
+                        'timeout' => 5.0,
                     ],
                 ],
                 $config,

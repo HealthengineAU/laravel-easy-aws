@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v3.0.4] - 2025-02-14
+
+### Added
+
+- Set `timeout` to `5.0` for the following AWS services:
+  - DynamoDB
+  - Lambda
+  - S3
+  - SNS
+  - SQS
+
 ## [v3.0.3] - 2025-02-13
 
 ### Changed
@@ -55,6 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The configuration for the Laravel AWS SDK service provider is now passed to the AWS SDK credential provider. This
   fixes the issue of the STS client always using the `us-east-1` regional endpoint.
 
+[v3.0.4]: https://github.com/HealthengineAU/laravel-easy-aws/compare/v3.0.3...v3.0.4
 [v3.0.3]: https://github.com/HealthengineAU/laravel-easy-aws/compare/v3.0.2...v3.0.3
 [v3.0.2]: https://github.com/HealthengineAU/laravel-easy-aws/compare/v3.0.1...v3.0.2
 [v3.0.1]: https://github.com/HealthengineAU/laravel-easy-aws/compare/v3.0.0...v3.0.1
