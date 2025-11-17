@@ -2,6 +2,7 @@
 
 namespace EasyAws;
 
+use Aws\Athena\AthenaClient;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\Lambda\LambdaClient;
 use Aws\S3\S3Client;
@@ -55,6 +56,7 @@ class ServiceProvider extends BaseServiceProvider
         $this->app->singleton(SnsClient::class, $this->getAwsClientClosure('sns'));
         $this->app->singleton(SqsClient::class, $this->getAwsClientClosure('sqs'));
         $this->app->singleton(DynamoDbClient::class, $this->getAwsClientClosure('dynamoDb'));
+        $this->app->singleton(AthenaClient::class, $this->getAwsClientClosure('athena'));
     }
 
     /**
