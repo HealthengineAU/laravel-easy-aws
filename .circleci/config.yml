@@ -1,13 +1,9 @@
 version: 2.1
 
 executors:
-  php81:
-    docker:
-      - image: cimg/php:8.1
-    resource_class: small
   php82:
     docker:
-      - image: cimg/php:8.2
+      - image: cimg/php:8.3
     resource_class: small
   php83:
     docker:
@@ -54,32 +50,10 @@ workflows:
       - lint
       - test:
           matrix:
-            exclude:
-              - laravel_version: '10'
-                php_executor: php81
-                testbench_version: '9'
-              - laravel_version: '10'
-                php_executor: php82
-                testbench_version: '9'
-              - laravel_version: '10'
-                php_executor: php83
-                testbench_version: '9'
-              - laravel_version: '11'
-                php_executor: php81
-                testbench_version: '8'
-              - laravel_version: '11'
-                php_executor: php81
-                testbench_version: '9'
-              - laravel_version: '11'
-                php_executor: php82
-                testbench_version: '8'
-              - laravel_version: '11'
-                php_executor: php83
-                testbench_version: '8'
             parameters:
-              laravel_version: ['10', '11']
-              php_executor: [php81, php82, php83]
-              testbench_version: ['8', '9']
+              laravel_version: ['12']
+              php_executor: [php82, php83]
+              testbench_version: ['10']
       - coverage:
           requires:
             - test

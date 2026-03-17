@@ -4,22 +4,17 @@
     "keywords": ["laravel", "aws", "cache", "credentials"],
     "type": "library",
     "license": "MIT",
-    "authors": [
-        {
-            "name": "Jarryd Tilbrook",
-            "email": "jrad.tilbrook@gmail.com"
-        }
-    ],
     "require": {
+        "php": "~8.2.0 || ~8.3.0",
         "aws/aws-sdk-php": "^3.155",
         "aws/aws-sdk-php-laravel": "^3.0",
-        "illuminate/cache": "^10.0 || ^11.0",
-        "illuminate/contracts": "^10.0 || ^11.0",
-        "illuminate/support": "^10.0 || ^11.0"
+        "illuminate/cache": "^12.0",
+        "illuminate/contracts": "^12.0",
+        "illuminate/support": "^12.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^8.0 || ^9.0",
-        "phpunit/phpunit": "^10.1",
+        "orchestra/testbench": "^10.0",
+        "phpunit/phpunit": "^11.5",
         "friendsofphp/php-cs-fixer": "^3.0"
     },
     "autoload": {
