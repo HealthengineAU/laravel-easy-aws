@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v3.0.6] - 2026-04-02
+
+### Fixed
+
+- Restored SQS client `timeout` to `60.0` seconds. Setting it to `5.0` in v3.0.4 broke SQS long-polling, which waits up to 20 seconds for messages.
+
 ## [v3.0.5] - 2025-11-17
 
 ### Added
@@ -72,6 +78,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The configuration for the Laravel AWS SDK service provider is now passed to the AWS SDK credential provider. This
   fixes the issue of the STS client always using the `us-east-1` regional endpoint.
 
+[v3.0.6]: https://github.com/HealthengineAU/laravel-easy-aws/compare/v3.0.5...v3.0.6
+[v3.0.5]: https://github.com/HealthengineAU/laravel-easy-aws/compare/v3.0.4...v3.0.5
 [v3.0.4]: https://github.com/HealthengineAU/laravel-easy-aws/compare/v3.0.3...v3.0.4
 [v3.0.3]: https://github.com/HealthengineAU/laravel-easy-aws/compare/v3.0.2...v3.0.3
 [v3.0.2]: https://github.com/HealthengineAU/laravel-easy-aws/compare/v3.0.1...v3.0.2
