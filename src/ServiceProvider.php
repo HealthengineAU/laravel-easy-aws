@@ -54,7 +54,12 @@ class ServiceProvider extends BaseServiceProvider
         $this->app->singleton(LambdaClient::class, $this->getAwsClientClosure('lambda'));
         $this->app->singleton(S3Client::class, $this->getAwsClientClosure('s3'));
         $this->app->singleton(SnsClient::class, $this->getAwsClientClosure('sns'));
-        $this->app->singleton(SqsClient::class, $this->getAwsClientClosure('sqs'));
+        $this->app->singleton(SqsClient::class, $this->getAwsClientClosure('sqs', [
+            'http' => [
+                'connect_timeout' => 5.0,
+                'timeout' => 60.0, // SQS long-polling waits up to 20s — must not be 5s
+            ],
+        ]));
         $this->app->singleton(DynamoDbClient::class, $this->getAwsClientClosure('dynamoDb'));
         $this->app->singleton(AthenaClient::class, $this->getAwsClientClosure('athena'));
     }
