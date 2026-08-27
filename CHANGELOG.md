@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [v5.0.0] - 2026-08-27
 
 ### Added
 
@@ -102,6 +102,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The configuration for the Laravel AWS SDK service provider is now passed to the AWS SDK credential provider. This
   fixes the issue of the STS client always using the `us-east-1` regional endpoint.
 
+[v5.0.0]: https://github.com/HealthengineAU/laravel-easy-aws/compare/v4.0.1...v5.0.0
 [v4.0.1]: https://github.com/HealthengineAU/laravel-easy-aws/compare/v4.0.0...v4.0.1
 [v4.0.0]: https://github.com/HealthengineAU/laravel-easy-aws/compare/v3.0.5...v4.0.0
 [v3.0.5]: https://github.com/HealthengineAU/laravel-easy-aws/compare/v3.0.4...v3.0.5
