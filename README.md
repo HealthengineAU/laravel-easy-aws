@@ -64,8 +64,8 @@ credential cache on the connection in `config/queue.php`:
 ],
 ```
 
-Laravel's SQS connector defaults to 60 second `connect_timeout` and `timeout`. Set `http` on the connection to change
-them.
+Laravel's SQS connector defaults both timeouts to 60 seconds. Set `queue.connections.sqs.http.connect_timeout` and
+`queue.connections.sqs.http.timeout` to change them.
 
 ## License
 

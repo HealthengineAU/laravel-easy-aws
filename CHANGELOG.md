@@ -17,7 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Removed the custom SQS queue connector. To keep caching SQS credentials, set
   `queue.connections.sqs.credential_cache` to `['enabled' => true, 'store' => '<store>']`.
-  Laravel's SQS connector uses 60 second connect and request timeouts; set `queue.connections.sqs.http` to change them.
+  Laravel's SQS connector defaults both timeouts to 60 seconds; set `queue.connections.sqs.http.connect_timeout` and
+  `queue.connections.sqs.http.timeout` to change them.
 - Removed `EasyAws\Cache\Adapter`.
 
 ## [v5.1.0] - 2026-09-11
