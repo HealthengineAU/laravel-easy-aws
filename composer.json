@@ -8,9 +8,7 @@
         "php": "~8.3.0 || ~8.4.0 || ~8.5.0",
         "aws/aws-sdk-php": "^3.155",
         "aws/aws-sdk-php-laravel": "^3.0",
-        "illuminate/cache": "^13.0",
-        "illuminate/contracts": "^13.0",
-        "illuminate/support": "^13.0"
+        "laravel/framework": "^13.27"
     },
     "require-dev": {
         "orchestra/testbench": "^11.0",

@@ -8,11 +8,8 @@ use Aws\Lambda\LambdaClient;
 use Aws\S3\S3Client;
 use Aws\Sns\SnsClient;
 use Aws\Sqs\SqsClient;
-use EasyAws\Cache\Adapter;
 use EasyAws\Credentials\CredentialProvider;
-use EasyAws\Queue\SqsConnector;
-use Illuminate\Cache\CacheManager;
-use Illuminate\Queue\QueueManager;
+use Illuminate\Queue\AwsCredentialCache;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider
@@ -22,13 +19,9 @@ class ServiceProvider extends BaseServiceProvider
      *
      * @return void
      */
-    public function boot(QueueManager $queueManager)
+    public function boot()
     {
         $this->publishes([__DIR__ . '/../config/easyaws.php' => config_path('easyaws.php')]);
-
-        $queueManager->extend('sqs', function () {
-            return new SqsConnector();
-        });
     }
 
     /**
@@ -45,11 +38,12 @@ class ServiceProvider extends BaseServiceProvider
                 config('aws', []),
                 [
                     'client' => config('easyaws.http_client'), // NOTE: used for unit testing only
-                    'credentials' => new Adapter($app->make(CacheManager::class), config('easyaws.cache_store')),
                 ],
             );
+            $provider = CredentialProvider::defaultProvider($config);
+            $cache = new AwsCredentialCache(fn () => $app->make('cache')->store(config('easyaws.cache_store')));
 
-            return CredentialProvider::defaultProvider($config);
+            return CredentialProvider::memoize(fn () => $cache->resolve('easyaws:credentials', $provider));
         });
         $this->app->singleton(LambdaClient::class, $this->getAwsClientClosure('lambda'));
         $this->app->singleton(S3Client::class, $this->getAwsClientClosure('s3'));
@@ -79,6 +73,9 @@ class ServiceProvider extends BaseServiceProvider
                     'http' => [
                         'connect_timeout' => 5.0,
                         'timeout' => 5.0,
+                    ],
+                    'retries' => [
+                        'mode' => 'standard',
                     ],
                 ],
                 $config,
