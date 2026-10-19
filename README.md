@@ -64,6 +64,9 @@ credential cache on the connection in `config/queue.php`:
 ],
 ```
 
+Laravel's SQS connector defaults to 60 second `connect_timeout` and `timeout`. Set `http` on the connection to change
+them.
+
 ## License
 
 Laravel Easy AWS is licensed under the MIT license.
