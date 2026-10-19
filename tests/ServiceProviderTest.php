@@ -7,6 +7,7 @@ use Aws\DynamoDb\DynamoDbClient;
 use Aws\Lambda\LambdaClient;
 use Aws\Laravel\AwsServiceProvider;
 use Aws\S3\S3Client;
+use Aws\Sdk;
 use Aws\Sns\SnsClient;
 use Aws\Sqs\SqsClient;
 use EasyAws\ServiceProvider;
@@ -45,6 +46,25 @@ class ServiceProviderTest extends TestCase
         // SQS long-polling waits up to 20s — timeout must not be 5s
         $this->assertSame(60.0, $options['timeout']);
         $this->assertSame(5.0, $options['connect_timeout']);
+    }
+
+    public function testClientsUseStandardRetryMode()
+    {
+        $sdk = new class (['region' => 'ap-southeast-2', 'version' => 'latest']) extends Sdk {
+            public array $args = [];
+
+            public function createClient($name, array $args = [])
+            {
+                $this->args = $args;
+
+                return parent::createClient($name, $args);
+            }
+        };
+        $this->app->instance('aws', $sdk);
+
+        $this->app->make(S3Client::class);
+
+        $this->assertSame(['mode' => 'standard'], $sdk->args['retries']);
     }
 
     public function testMakeDynamoDbClient()

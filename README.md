@@ -32,8 +32,9 @@ $s3 = app(Aws\S3\S3Client::class);
 ```
 
 Credentials are resolved automatically using the default provider chain from the AWS SDK. The only difference is that
-they will be cached. This really only helps if that credentials chain ended up resolving credentials from the EC2
-Metadata API, otherwise it would have been using hardcoded credentials of some kind and caching them doesn't help much.
+they will be cached using Laravel's `AwsCredentialCache`. This really only helps if that credentials chain ended up
+resolving credentials from the EC2 Metadata API, otherwise it would have been using hardcoded credentials of some kind
+and caching them doesn't help much.
 
 You can configure which cache store to use by setting the environment variable `EASYAWS_CACHE_STORE` to any built in
 Laravel cache drivers.
@@ -43,11 +44,28 @@ Laravel cache drivers.
 Caching credentials can be insecure. Be careful if you are going to use an external cache driver like Redis or database
 as the credentials are stored in plaintext.
 
-## SQS Client
+## Retries
 
-The queue configuration for AWS SQS has also been modified to use these cached credentials. This means you don't need to
-add a key or secret for that client - if using SQS as your queue driver. Also **please note** that  the `prefix`
-configuration key is not used because it is redundant, you'll need to prepend the value of `prefix` to `queue`.
+All clients use the AWS SDK's `standard` retry mode.
+
+## SQS Queue
+
+This package no longer overrides Laravel's `sqs` queue connector. To cache SQS credentials, enable Laravel's built-in
+credential cache on the connection in `config/queue.php`:
+
+```php
+'sqs' => [
+    'driver' => 'sqs',
+    // ...
+    'credential_cache' => [
+        'enabled' => true,
+        'store' => 'file', // any cache store
+    ],
+],
+```
+
+Laravel's SQS connector defaults both timeouts to 60 seconds. Set `queue.connections.sqs.http.connect_timeout` and
+`queue.connections.sqs.http.timeout` to change them.
 
 ## License
 

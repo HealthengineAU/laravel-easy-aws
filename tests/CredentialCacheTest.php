@@ -11,7 +11,7 @@ use Illuminate\Cache\CacheManager;
 use Orchestra\Testbench\TestCase;
 use GuzzleHttp\Promise\Create;
 
-class AdapterTest extends TestCase
+class CredentialCacheTest extends TestCase
 {
     public function testCredentialResolution()
     {
@@ -19,7 +19,7 @@ class AdapterTest extends TestCase
         $cache = $this->app->make(CacheManager::class)->store('array');
 
         $this->assertInstanceOf(Credentials::class, app('easyaws.credentials')()->wait());
-        $this->assertTrue($cache->has('easyaws_cached_instance_credentials'));
+        $this->assertTrue($cache->has('easyaws:credentials'));
     }
 
     protected function getEnvironmentSetUp($app)

@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v6.0.0] - 2026-10-19
+
+### Changed
+
+- AWS clients now use the `standard` retry mode.
+- Credentials are now cached using Laravel's `Illuminate\Queue\AwsCredentialCache`.
+- Replaced `illuminate/*` requirements with `laravel/framework` `^13.27`.
+
+### Removed
+
+- Removed the custom SQS queue connector. To keep caching SQS credentials, set
+  `queue.connections.sqs.credential_cache` to `['enabled' => true, 'store' => '<store>']`.
+  Laravel's SQS connector defaults both timeouts to 60 seconds; set `queue.connections.sqs.http.connect_timeout` and
+  `queue.connections.sqs.http.timeout` to change them.
+- Removed `EasyAws\Cache\Adapter`.
+
 ## [v5.1.0] - 2026-09-11
 
 ### Added
@@ -108,6 +124,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The configuration for the Laravel AWS SDK service provider is now passed to the AWS SDK credential provider. This
   fixes the issue of the STS client always using the `us-east-1` regional endpoint.
 
+[v6.0.0]: https://github.com/HealthengineAU/laravel-easy-aws/compare/v5.1.0...v6.0.0
 [v5.1.0]: https://github.com/HealthengineAU/laravel-easy-aws/compare/v5.0.0...v5.1.0
 [v5.0.0]: https://github.com/HealthengineAU/laravel-easy-aws/compare/v4.0.1...v5.0.0
 [v4.0.1]: https://github.com/HealthengineAU/laravel-easy-aws/compare/v4.0.0...v4.0.1
