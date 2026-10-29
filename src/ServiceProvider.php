@@ -3,13 +3,14 @@
 namespace EasyAws;
 
 use Aws\Athena\AthenaClient;
+use Aws\Credentials\CredentialProvider as AwsCredentialProvider;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\Lambda\LambdaClient;
 use Aws\S3\S3Client;
 use Aws\Sns\SnsClient;
 use Aws\Sqs\SqsClient;
+use EasyAws\Credentials\CredentialCache;
 use EasyAws\Credentials\CredentialProvider;
-use Illuminate\Queue\AwsCredentialCache;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider
@@ -41,9 +42,12 @@ class ServiceProvider extends BaseServiceProvider
                 ],
             );
             $provider = CredentialProvider::defaultProvider($config);
-            $cache = new AwsCredentialCache(fn () => $app->make('cache')->store(config('easyaws.cache_store')));
+            $cache = new CredentialCache(fn () => $app->make('cache')->store(config('easyaws.cache_store')));
 
-            return CredentialProvider::memoize(fn () => $cache->resolve('easyaws:credentials', $provider));
+            return CredentialProvider::memoize(CredentialProvider::chain(
+                AwsCredentialProvider::env(),
+                fn () => $cache->resolve('easyaws:credentials', $provider),
+            ));
         });
         $this->app->singleton(LambdaClient::class, $this->getAwsClientClosure('lambda'));
         $this->app->singleton(S3Client::class, $this->getAwsClientClosure('s3'));

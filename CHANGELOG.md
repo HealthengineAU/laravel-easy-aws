@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Security
+
+- Credentials without an expiration (e.g. static `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY`) are no longer cached,
+  and any cached by v6.0.0 are no longer served. Environment credentials now skip the cache entirely; apps using them
+  should run `php artisan cache:forget easyaws:credentials <easyaws.cache_store>` once to remove the stale entry.
+
 ## [v6.0.0] - 2026-10-19
 
 ### Changed

@@ -4,6 +4,7 @@ namespace EasyAws\Tests;
 
 use Aws\Credentials\Credentials;
 use Aws\Laravel\AwsServiceProvider;
+use EasyAws\Credentials\CredentialCache;
 use EasyAws\ServiceProvider;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Utils;
@@ -16,10 +17,47 @@ class CredentialCacheTest extends TestCase
     public function testCredentialResolution()
     {
         app('easyaws.credentials')()->wait();
-        $cache = $this->app->make(CacheManager::class)->store('array');
 
         $this->assertInstanceOf(Credentials::class, app('easyaws.credentials')()->wait());
-        $this->assertTrue($cache->has('easyaws:credentials'));
+        $this->assertTrue($this->cache()->has('easyaws:credentials'));
+    }
+
+    public function testStaticCredentialsAreNotCached()
+    {
+        $this->useStaticCredentials();
+
+        $this->assertSame('static-key', app('easyaws.credentials')()->wait()->getAccessKeyId());
+        $this->assertFalse($this->cache()->has('easyaws:credentials'));
+    }
+
+    public function testNonExpiringCredentialsAreIgnoredAndPurged()
+    {
+        $this->cache()->forever('easyaws:credentials', new Credentials('revoked-key', 'revoked-secret'));
+        $cache = new CredentialCache(fn () => $this->cache());
+
+        $credentials = $cache->resolve('easyaws:credentials', fn () => Create::promiseFor(new Credentials('static-key', 'static-secret')))->wait();
+
+        $this->assertSame('static-key', $credentials->getAccessKeyId());
+        $this->assertFalse($this->cache()->has('easyaws:credentials'));
+    }
+
+    protected function tearDown(): void
+    {
+        putenv('AWS_ACCESS_KEY_ID');
+        putenv('AWS_SECRET_ACCESS_KEY');
+
+        parent::tearDown();
+    }
+
+    protected function useStaticCredentials()
+    {
+        putenv('AWS_ACCESS_KEY_ID=static-key');
+        putenv('AWS_SECRET_ACCESS_KEY=static-secret');
+    }
+
+    protected function cache()
+    {
+        return $this->app->make(CacheManager::class)->store('array');
     }
 
     protected function getEnvironmentSetUp($app)
