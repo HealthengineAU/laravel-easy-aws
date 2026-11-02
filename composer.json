@@ -5,16 +5,14 @@
     "type": "library",
     "license": "MIT",
     "require": {
-        "php": "~8.2.0 || ~8.3.0",
+        "php": "~8.3.0 || ~8.4.0 || ~8.5.0",
         "aws/aws-sdk-php": "^3.155",
         "aws/aws-sdk-php-laravel": "^3.0",
-        "illuminate/cache": "^12.0",
-        "illuminate/contracts": "^12.0",
-        "illuminate/support": "^12.0"
+        "laravel/framework": "^13.27"
     },
     "require-dev": {
-        "orchestra/testbench": "^10.0",
-        "phpunit/phpunit": "^11.5",
+        "orchestra/testbench": "^11.0",
+        "phpunit/phpunit": "^12.0",
         "friendsofphp/php-cs-fixer": "^3.0"
     },
     "autoload": {
