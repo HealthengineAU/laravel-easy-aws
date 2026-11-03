@@ -1,21 +1,21 @@
 version: 2
 updates:
-- package-ecosystem: composer
+- assignees:
+    - tspencer244
   directory: /
-  schedule:
-    interval: daily
-    time: '15:00'
-    timezone: Australia/Perth
-  assignees:
-    - tspencer244
-  open-pull-requests-limit: 3
-  pull-request-branch-name:
-    separator: '-'
-  rebase-strategy: disabled
-  reviewers:
-    - tspencer244
   groups:
     composer-minor-patch:
       update-types:
         - minor
         - patch
+  open-pull-requests-limit: 3
+  package-ecosystem: composer
+  pull-request-branch-name:
+    separator: '-'
+  rebase-strategy: disabled
+  reviewers:
+    - tspencer244
+  schedule:
+    interval: daily
+    time: '15:00'
+    timezone: Australia/Perth
