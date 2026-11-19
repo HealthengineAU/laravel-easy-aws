@@ -10,6 +10,7 @@ use Aws\S3\S3Client;
 use Aws\Sdk;
 use Aws\Sns\SnsClient;
 use Aws\Sqs\SqsClient;
+use Aws\Sts\StsClient;
 use EasyAws\ServiceProvider;
 use Orchestra\Testbench\TestCase;
 
@@ -75,6 +76,35 @@ class ServiceProviderTest extends TestCase
     public function testMakeAthenaClient()
     {
         $this->assertInstanceOf(AthenaClient::class, $this->app->make(AthenaClient::class));
+    }
+
+    public function testCredentialProviderSharesStsClientForWebIdentity()
+    {
+        putenv('AWS_ROLE_ARN=arn:aws:iam::123456789012:role/test');
+        putenv('AWS_WEB_IDENTITY_TOKEN_FILE=/var/run/secrets/token');
+        config(['aws.region' => 'ap-southeast-2']);
+
+        try {
+            $config = $this->getCredentialProviderConfig();
+        } finally {
+            putenv('AWS_ROLE_ARN');
+            putenv('AWS_WEB_IDENTITY_TOKEN_FILE');
+        }
+
+        $this->assertInstanceOf(StsClient::class, $config['stsClient']);
+        $this->assertSame('ap-southeast-2', $config['stsClient']->getRegion());
+    }
+
+    public function testCredentialProviderHasNoStsClientWithoutWebIdentity()
+    {
+        $this->assertArrayNotHasKey('stsClient', $this->getCredentialProviderConfig());
+    }
+
+    private function getCredentialProviderConfig(): array
+    {
+        $method = new \ReflectionMethod(ServiceProvider::class, 'getCredentialProviderConfig');
+
+        return $method->invoke(new ServiceProvider($this->app));
     }
 
     protected function getPackageProviders($app)
