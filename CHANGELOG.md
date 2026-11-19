@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Raised the minimum `aws/aws-sdk-php` version to 3.358.
+
 ### Fixed
 
 - Web identity (IRSA) credentials now reuse one STS client. The SDK built a new one on every refresh, leaking about
