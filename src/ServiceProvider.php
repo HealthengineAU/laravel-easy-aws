@@ -10,11 +10,23 @@ use Aws\Sns\SnsClient;
 use Aws\Sqs\SqsClient;
 use Aws\Sts\StsClient;
 use EasyAws\Credentials\CredentialProvider;
+use EasyAws\Queue\SqsConnector;
 use Illuminate\Queue\AwsCredentialCache;
+use Illuminate\Queue\QueueManager;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider
 {
+    private const CLIENT_DEFAULTS = [
+        'http' => [
+            'connect_timeout' => 5.0,
+            'timeout' => 5.0,
+        ],
+        'retries' => [
+            'mode' => 'standard',
+        ],
+    ];
+
     /**
      * Perform post-registration booting of services.
      *
@@ -23,6 +35,10 @@ class ServiceProvider extends BaseServiceProvider
     public function boot()
     {
         $this->publishes([__DIR__ . '/../config/easyaws.php' => config_path('easyaws.php')]);
+
+        $this->callAfterResolving('queue', function (QueueManager $manager) {
+            $manager->extend('sqs', fn () => new SqsConnector());
+        });
     }
 
     /**
@@ -37,12 +53,13 @@ class ServiceProvider extends BaseServiceProvider
         $this->app->singleton('easyaws.credentials', function ($app) {
             $provider = null;
             $cache = new AwsCredentialCache(fn () => $app->make('cache')->store(config('easyaws.cache_store')));
-
-            return CredentialProvider::memoize(fn () => $cache->resolve('easyaws:credentials', function () use (&$provider) {
+            $resolve = function () use (&$provider) {
                 $provider ??= CredentialProvider::defaultProvider($this->getCredentialProviderConfig());
 
                 return $provider();
-            }));
+            };
+
+            return CredentialProvider::memoize(fn () => $cache->resolve('easyaws:credentials', $resolve));
         });
         $this->app->singleton(LambdaClient::class, $this->getAwsClientClosure('lambda'));
         $this->app->singleton(S3Client::class, $this->getAwsClientClosure('s3'));
@@ -57,7 +74,6 @@ class ServiceProvider extends BaseServiceProvider
         $this->app->singleton(AthenaClient::class, $this->getAwsClientClosure('athena'));
     }
 
-    /** Share one STS client for web identity credentials; the SDK otherwise leaks one per refresh. */
     protected function getCredentialProviderConfig(): array
     {
         $config = array_merge(
@@ -72,9 +88,10 @@ class ServiceProvider extends BaseServiceProvider
             && getenv(CredentialProvider::ENV_TOKEN_FILE)
             && getenv(CredentialProvider::ENV_ARN)
         ) {
-            $config['stsClient'] = new StsClient([
+            $config['stsClient'] = new StsClient(self::CLIENT_DEFAULTS + [
                 'credentials' => false,
-                'region' => $config['region'] ?? (getenv(CredentialProvider::ENV_REGION) ?: CredentialProvider::FALLBACK_REGION),
+                'region' => ($config['region'] ?? null)
+                    ?: (getenv(CredentialProvider::ENV_REGION) ?: CredentialProvider::FALLBACK_REGION),
             ]);
         }
 
@@ -91,16 +108,8 @@ class ServiceProvider extends BaseServiceProvider
     {
         return function ($app, $runtimeConfig) use ($client, $config) {
             $config = array_merge(
-                [
-                    'credentials' => $app->make('easyaws.credentials'),
-                    'http' => [
-                        'connect_timeout' => 5.0,
-                        'timeout' => 5.0,
-                    ],
-                    'retries' => [
-                        'mode' => 'standard',
-                    ],
-                ],
+                ['credentials' => $app->make('easyaws.credentials')],
+                self::CLIENT_DEFAULTS,
                 $config,
                 $runtimeConfig
             );

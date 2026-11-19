@@ -50,19 +50,9 @@ All clients use the AWS SDK's `standard` retry mode.
 
 ## SQS Queue
 
-This package no longer overrides Laravel's `sqs` queue connector. To cache SQS credentials, enable Laravel's built-in
-credential cache on the connection in `config/queue.php`:
-
-```php
-'sqs' => [
-    'driver' => 'sqs',
-    // ...
-    'credential_cache' => [
-        'enabled' => true,
-        'store' => 'file', // any cache store
-    ],
-],
-```
+This package extends Laravel's `sqs` queue connector only to default its credentials to this package's cached
+credentials, which share one STS client on web identity (IRSA). Connections with `credentials`, or with both `key` and
+`secret`, are left as configured.
 
 Laravel's SQS connector defaults both timeouts to 60 seconds. Set `queue.connections.sqs.http.connect_timeout` and
 `queue.connections.sqs.http.timeout` to change them.
