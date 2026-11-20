@@ -54,6 +54,12 @@ This package extends Laravel's `sqs` queue connector only to default its credent
 credentials, which share one STS client on web identity (IRSA). Connections with `credentials`, or with both `key` and
 `secret`, are left as configured.
 
+The connector builds each queue's `SqsClient` through a container-bound factory, so tests can swap in a mock:
+
+```php
+$this->app->instance(\EasyAws\Queue\SqsConnector::CLIENT_FACTORY, fn (array $config) => $mockSqsClient);
+```
+
 Laravel's SQS connector defaults both timeouts to 60 seconds. Set `queue.connections.sqs.http.connect_timeout` and
 `queue.connections.sqs.http.timeout` to change them.
 

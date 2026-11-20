@@ -13,12 +13,22 @@ use Aws\Sdk;
 use Aws\Sns\SnsClient;
 use Aws\Sqs\SqsClient;
 use Aws\Sts\StsClient;
+use EasyAws\Queue\SqsConnector;
 use EasyAws\ServiceProvider;
 use GuzzleHttp\Promise\Create;
+use Illuminate\Queue\Connectors\SqsConnector as LaravelSqsConnector;
+use Illuminate\Queue\SqsQueue;
 use Orchestra\Testbench\TestCase;
 
 class ServiceProviderTest extends TestCase
 {
+    private const SQS_CONNECTION = [
+        'driver' => 'sqs',
+        'prefix' => 'https://sqs.ap-southeast-2.amazonaws.com/123456789012',
+        'queue' => 'default',
+        'region' => 'ap-southeast-2',
+    ];
+
     private const WEB_IDENTITY_ENV = [
         'AWS_ROLE_ARN' => 'arn:aws:iam::123456789012:role/test',
         'AWS_WEB_IDENTITY_TOKEN_FILE' => __FILE__,
@@ -161,6 +171,43 @@ class ServiceProviderTest extends TestCase
     public function testSqsQueueKeepsStaticKeys()
     {
         $this->assertSame('static', $this->sqsQueueAccessKeyId(['key' => 'static', 'secret' => 'secret']));
+    }
+
+    public function testSqsQueueUsesBoundClientFactory()
+    {
+        $client = new SqsClient(['region' => 'ap-southeast-2', 'credentials' => false]);
+        $credentials = null;
+        $this->app->instance(SqsConnector::CLIENT_FACTORY, function (array $config) use ($client, &$credentials) {
+            $credentials = $config['credentials'];
+
+            return $client;
+        });
+        config(['queue.connections.sqs' => self::SQS_CONNECTION]);
+
+        $this->assertSame($client, $this->app->make('queue')->connection('sqs')->getSqs());
+        $this->assertSame($this->app->make('easyaws.credentials'), $credentials);
+    }
+
+    public function testSqsConnectorBuildsSameQueueAsLaravel()
+    {
+        $config = self::SQS_CONNECTION + ['suffix' => '-dev', 'after_commit' => true, 'key' => 'k', 'secret' => 's'];
+
+        $ours = (new SqsConnector())->connect($config);
+        $laravels = (new LaravelSqsConnector())->connect($config);
+
+        $this->assertSame($this->queueState($laravels), $this->queueState($ours));
+    }
+
+    private function queueState(SqsQueue $queue): array
+    {
+        $state = [];
+        foreach ((new \ReflectionClass($queue))->getProperties() as $property) {
+            if (!in_array($property->getName(), ['sqs', 'container'], true)) {
+                $state[$property->getName()] = $property->getValue($queue);
+            }
+        }
+
+        return $state;
     }
 
     private function sqsQueueAccessKeyId(array $config): string
