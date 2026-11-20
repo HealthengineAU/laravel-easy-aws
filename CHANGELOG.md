@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Raised the minimum `aws/aws-sdk-php` version to 3.358.
+
+### Fixed
+
+- Web identity (IRSA) credentials now reuse one STS client. The SDK built a new one on every refresh, leaking about
+  1 MB of native memory per refresh in long-running processes such as queue workers. The client uses the same 5 second
+  timeouts and `standard` retry mode as the other clients.
+- SQS queue connections without `credentials` or a `key` and `secret` now use this package's cached credentials, so
+  queue workers also share the STS client. Laravel's `credential_cache` option is no longer needed for them.
+
 ## [v6.0.0] - 2026-10-19
 
 ### Changed
