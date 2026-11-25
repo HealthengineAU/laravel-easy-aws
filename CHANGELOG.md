@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v6.2.0] - 2026-11-20
+
+### Added
+
+- SQS queue connections build their `SqsClient` through a container-bound factory (`SqsConnector::CLIENT_FACTORY`),
+  so tests can bind a mock client again.
+
+## [v6.1.0] - 2026-11-20
+
+### Changed
+
+- Raised the minimum `aws/aws-sdk-php` version to 3.358.
+
+### Fixed
+
+- Web identity (IRSA) credentials now reuse one STS client. The SDK built a new one on every refresh, leaking about
+  1 MB of native memory per refresh in long-running processes such as queue workers. The client uses the same 5 second
+  timeouts and `standard` retry mode as the other clients.
+- SQS queue connections without `credentials` or a `key` and `secret` now use this package's cached credentials, so
+  queue workers also share the STS client. Laravel's `credential_cache` option is no longer needed for them.
+
 ## [v6.0.0] - 2026-10-19
 
 ### Changed
@@ -124,6 +145,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The configuration for the Laravel AWS SDK service provider is now passed to the AWS SDK credential provider. This
   fixes the issue of the STS client always using the `us-east-1` regional endpoint.
 
+[v6.2.0]: https://github.com/HealthengineAU/laravel-easy-aws/compare/v6.1.0...v6.2.0
+[v6.1.0]: https://github.com/HealthengineAU/laravel-easy-aws/compare/v6.0.0...v6.1.0
 [v6.0.0]: https://github.com/HealthengineAU/laravel-easy-aws/compare/v5.1.0...v6.0.0
 [v5.1.0]: https://github.com/HealthengineAU/laravel-easy-aws/compare/v5.0.0...v5.1.0
 [v5.0.0]: https://github.com/HealthengineAU/laravel-easy-aws/compare/v4.0.1...v5.0.0
